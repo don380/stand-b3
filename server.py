@@ -65,6 +65,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return
         if p == "/assets/logo-white.png": fp = ROOT / "assets/logo-white.png"
         elif p == "/assets/font.woff2": fp = ROOT / "assets/font.woff2"
+        elif p == "/stand-b3-runtime.js": fp = ROOT / "stand-b3-runtime.js"
         elif p.startswith("/videos/"): fp = ROOT / "videos" / Path(p).name
         elif p in ("/ipad", "/ipad.html"): fp = ROOT / "ipad.html"
         elif p in ("/tv", "/tv.html"): fp = ROOT / "tv.html"
@@ -72,7 +73,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not fp.exists() or not fp.is_file():
             self.send_error(404); return
         total = fp.stat().st_size
-        ctype = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".vtt": "text/vtt; charset=utf-8", ".woff2": "font/woff2"}.get(fp.suffix, "text/html; charset=utf-8")
+        ctype = {".mp4": "video/mp4", ".jpg": "image/jpeg", ".png": "image/png", ".vtt": "text/vtt; charset=utf-8", ".woff2": "font/woff2", ".js": "application/javascript; charset=utf-8"}.get(fp.suffix, "text/html; charset=utf-8")
         rng = self.headers.get("Range")
         if rng and rng.startswith("bytes="):
             parts = rng[6:].split("-")

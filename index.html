@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reloops · Stand B3 Video Suite &amp; iPad/TV Studio</title>
+  <style>
+    @font-face {
+      font-family: 'Plus Jakarta Sans';
+      font-style: normal;
+      font-weight: 400 800;
+      src: url('./assets/font.woff2') format('woff2');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b1626;
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    a { color: #60a5fa; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(11, 22, 38, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 14px 24px;
+    }
+    .header-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand img { height: 32px; width: auto; }
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #122033;
+      padding: 5px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: #cbd5e1;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { color: #ffffff; }
+    .tab-btn.active {
+      background: #1d6bf3;
+      color: #ffffff;
+      box-shadow: 0 4px 16px rgba(29, 107, 243, 0.35);
+    }
+
+    .quick-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: #16263b;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none !important;
+      transition: all 0.15s ease;
+    }
+    .pill-link:hover { border-color: #60a5fa; color: #fff; }
+    .pill-link.emerald {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(52, 211, 153, 0.45);
+      color: #34d399;
+    }
+
+    .container {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 22px 24px 48px;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* TAB 1: All 10 Videos Review Gallery */
+    .gallery-layout {
+      display: grid;
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    @media (max-width: 1060px) {
+      .gallery-layout { grid-template-columns: 1fr; }
+    }
+
+    .video-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      background: #111e30;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+    }
+    .list-header {
+      padding: 4px 8px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .vid-item {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: #16263b;
+      border: 1.5px solid rgba(148, 163, 184, 0.14);
+      color: #f8fafc;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .vid-item:hover { border-color: rgba(96, 165, 250, 0.45); }
+    .vid-item.active {
+      background: linear-gradient(180deg, #16325c 0%, #102444 100%);
+      border-color: #3b82f6;
+      box-shadow: 0 6px 22px rgba(37, 99, 235, 0.25);
+    }
+    .vid-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .vid-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 7px;
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .vid-item.active .vid-num { background: #2563eb; color: #fff; }
+    .vid-dur {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      font-variant-numeric: tabular-nums;
+    }
+    .vid-title { font-size: 15px; font-weight: 700; color: #fff; }
+    .vid-sub { font-size: 12.5px; color: #94a3b8; }
+    .vid-panel { font-size: 11.5px; font-weight: 600; color: #34d399; margin-top: 2px; }
+
+    .stage-col {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .player-card {
+      background: #111e30;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.42);
+    }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #0c192a;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #0c192a;
+    }
+    video::cue {
+      background: rgba(12, 25, 42, 0.88);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .player-bar {
+      padding: 16px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .player-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .player-title { font-size: 21px; font-weight: 800; color: #fff; }
+    .player-sub { font-size: 14px; color: #94a3b8; margin-top: 2px; }
+    .panel-tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: #34d399;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+    .chapters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .ch-btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #182940;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #dbeafe;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .ch-btn:hover { background: #2563eb; border-color: #60a5fa; color: #fff; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 18px;
+    }
+    @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: #111e30;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 18px 20px;
+    }
+    .info-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #60a5fa;
+      margin-bottom: 12px;
+    }
+    .info-card h3.emerald { color: #34d399; }
+    .notes-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .notes-list li {
+      padding: 10px 13px;
+      border-radius: 12px;
+      background: #16263b;
+      border-left: 3px solid #34d399;
+      font-size: 13.5px;
+      color: #e2e8f0;
+    }
+    .cue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 310px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .cue-row {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      gap: 10px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      background: #16263b;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.15s ease;
+    }
+    .cue-row:hover { background: #1e3452; }
+    .cue-time {
+      color: #93c5fd;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .cue-txt { color: #e2e8f0; }
+
+    /* TAB 2: Live Paired Simulator */
+    .sim-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      border-radius: 16px;
+      background: rgba(29, 107, 243, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.32);
+    }
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 500px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1180px) { .sim-grid { grid-template-columns: 1fr; } }
+
+    .device-box {
+      background: #111e30;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+    }
+    .device-head {
+      padding: 11px 16px;
+      background: #16263b;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+    .ipad-iframe {
+      width: 100%;
+      height: 760px;
+      border: none;
+      display: block;
+      background: #0b1626;
+    }
+    .tv-iframe {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: none;
+      display: block;
+      background: #0c192a;
+    }
+
+    /* TAB 3: Tuesday Setup Guide */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    @media (max-width: 900px) { .setup-grid { grid-template-columns: 1fr; } }
+    .step-card {
+      background: #111e30;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 11px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .step-card h3 { font-size: 18px; font-weight: 800; color: #fff; }
+    .step-card p { font-size: 14px; color: #cbd5e1; }
+    pre {
+      background: #091220;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #93c5fd;
+      overflow-x: auto;
+    }
+  </style>
+  <script src="./stand-b3-runtime.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="./assets/logo-white.png" alt="reloops" />
+        <div class="brand-meta">
+          <span class="brand-title">Stand B3 · 10-Video Suite &amp; iPad / 50&quot; TV Controller</span>
+          <span class="brand-sub">The Movers &amp; Storers Show 2026 · NAEC Stoneleigh · Calm Sophia Executive Pacing</span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="gallery">1. Watch All 10 Videos</button>
+        <button class="tab-btn" data-tab="simulator">2. Live iPad ↔ 50&quot; TV Pair</button>
+        <button class="tab-btn" data-tab="setup">3. Tuesday Stand B3 Setup</button>
+      </div>
+
+      <div class="quick-links">
+        <a class="pill-link" href="./ipad.html" target="_blank">Open iPad Remote ↗</a>
+        <a class="pill-link emerald" href="./tv.html" target="_blank">Open 50&quot; TV Stage ↗</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: GALLERY -->
+    <section id="tab-gallery" class="tab-panel active">
+      <div class="gallery-layout">
+        <aside class="video-list">
+          <div class="list-header">
+            <span>Stand B3 Playlist (No Customs)</span>
+            <span id="total-runtime">—</span>
+          </div>
+          <div id="video-items"></div>
+        </aside>
+
+        <div class="stage-col">
+          <div class="player-card">
+            <div class="video-frame">
+              <video id="review-video" controls playsinline preload="metadata">
+                <track id="review-track" kind="captions" srclang="en" label="English" default />
+              </video>
+            </div>
+            <div class="player-bar">
+              <div class="player-head">
+                <div>
+                  <div class="player-title" id="cur-title">Loading…</div>
+                  <div class="player-sub" id="cur-sub"></div>
+                </div>
+                <span class="panel-tag" id="cur-panel"></span>
+              </div>
+              <div class="chapters" id="cur-chapters"></div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="info-card">
+              <h3 class="emerald">Tristan’s Stand B3 Talking Points (Shown on iPad)</h3>
+              <ul class="notes-list" id="cur-notes"></ul>
+            </div>
+            <div class="info-card">
+              <h3>Sophia Narration &amp; Timestamp Cues (Click to Seek)</h3>
+              <div class="cue-list" id="cur-cues"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIVE PAIRED SIMULATOR -->
+    <section id="tab-simulator" class="tab-panel">
+      <div class="sim-banner">
+        <div>
+          <strong>Live Real-Time Pairing Test:</strong> Tap any of the 10 topics on Tristan’s iPad on the left — the 50&quot; Stand B3 TV stage on the right switches immediately via Server-Sent Events.
+        </div>
+        <div style="font-size:13px;color:#93c5fd;">Tip: Click “Enable Audio” on the TV stage once to hear Sophia inside the paired preview.</div>
+      </div>
+      <div class="sim-grid">
+        <div class="device-box">
+          <div class="device-head">
+            <span>Tristan’s iPad Touch Remote (<code>/ipad</code>)</span>
+            <a href="./ipad.html" target="_blank">Full tab ↗</a>
+          </div>
+          <iframe class="ipad-iframe" id="sim-ipad" data-src="./ipad.html"></iframe>
+        </div>
+        <div class="device-box">
+          <div class="device-head">
+            <span>50&quot; Stand B3 TV Screen (<code>/tv</code>)</span>
+            <a href="./tv.html" target="_blank">Full screen ↗</a>
+          </div>
+          <iframe class="tv-iframe" id="sim-tv" data-src="./tv.html"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TUESDAY SETUP -->
+    <section id="tab-setup" class="tab-panel">
+      <div class="setup-grid">
+        <div class="step-card">
+          <span class="step-badge">Step 1 · Stand Laptop (09:45 Tue)</span>
+          <h3>Start the Stand B3 Server Locally</h3>
+          <p>Run this folder directly on your stand laptop so all 10 1080p MP4s play from disk — zero dependency on NAEC Hall 2 exhibition Wi-Fi.</p>
+          <pre>node server.mjs</pre>
+          <p id="lan-readout" style="color:#34d399;font-weight:600;"></p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-badge">Step 2 · 50&quot; TV via HDMI</span>
+          <h3>Put <code>/tv</code> Fullscreen on the 50&quot; TV</h3>
+          <p>Plug your laptop HDMI cable into the hired 50&quot; screen, drag a Chrome window onto the TV display, open <code>http://localhost:4310/tv</code>, and click the blue <strong>Enable Audio &amp; Fullscreen</strong> button once before doors open at 10:00.</p>
+          <p>Between visitors, the TV calmly cycles your Stand B3 headlines in exact <code>#0D1B2A</code> brand colours.</p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-badge">Step 3 · Tristan’s iPad</span>
+          <h3>Connect iPad &amp; Laptop to Your Phone Hotspot</h3>
+          <p>Join both your MacBook and Tristan’s iPad to your iPhone Personal Hotspot (or a pocket travel router). On the iPad, open Safari to <code>http://&lt;macbook-local-ip&gt;:4310/ipad</code> and tap <strong>Share → Add to Home Screen</strong>.</p>
+          <p>Tristan gets 10 large plain-English buttons, a <strong>Pause to Talk</strong> button whenever a director asks a question mid-video, chapter skip pills, and 3 plain-English bullet points for every video.</p>
+        </div>
+
+        <div class="step-card">
+          <span class="step-badge">Step 4 · Optional Tweaks</span>
+          <h3>Editing Any Line Before Tuesday</h3>
+          <p>All 10 scripts live in <code>src/videos/01-*.js</code> through <code>10-*.js</code>, with raw Sophia clips cached in <code>voiceovers/</code> so re-timing or changing a single sentence only synthesizes the changed line:</p>
+          <pre>ELEVENLABS_API_KEY=... python3 scripts/voice_with_sophia.py 01-reloops-overview
+node scripts/render_one.mjs 01-reloops-overview</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let catalog = [];
+    let currentSlug = null;
+
+    function fmtTime(sec) {
+      const s = Math.max(0, Math.round(sec || 0));
+      const m = Math.floor(s / 60);
+      const r = String(s % 60).padStart(2, '0');
+      return `${m}:${r}`;
+    }
+
+    async function parseVttFallback(vttUrl) {
+      try {
+        const txt = await (await fetch(vttUrl)).text();
+        const blocks = txt.replace(/\r/g, '').split('\n\n');
+        const cues = [];
+        for (const b of blocks) {
+          const lines = b.trim().split('\n');
+          const arrowLine = lines.findIndex((l) => l.includes('-->'));
+          if (arrowLine !== -1) {
+            const startStr = lines[arrowLine].split('-->')[0].trim();
+            const parts = startStr.split(':').map(Number);
+            const s = parts.length === 3 ? parts[0] * 3600 + parts[1] * 60 + parts[2] : parts[0] * 60 + parts[1];
+            const text = lines.slice(arrowLine + 1).join(' ');
+            cues.push({ s, text });
+          }
+        }
+        return cues;
+      } catch {
+        return [];
+      }
+    }
+
+    async function selectVideo(slug, autoPlay = false) {
+      currentSlug = slug;
+      const item = catalog.find((v) => v.slug === slug) || catalog[0];
+      if (!item) return;
+
+      document.querySelectorAll('.vid-item').forEach((el) => {
+        el.classList.toggle('active', el.dataset.slug === item.slug);
+      });
+
+      const video = document.getElementById('review-video');
+      const track = document.getElementById('review-track');
+      video.pause();
+      video.poster = item.posterUrl;
+      video.src = item.videoUrl;
+      track.src = item.vttUrl;
+      video.load();
+      video.addEventListener('loadedmetadata', () => {
+        if (video.textTracks && video.textTracks[0]) {
+          video.textTracks[0].mode = 'showing';
+        }
+      }, { once: true });
+      if (autoPlay) {
+        video.play().catch(() => {});
+      }
+
+      document.getElementById('cur-title').textContent = `${String(item.number).padStart(2, '0')}. ${item.title}`;
+      document.getElementById('cur-sub').textContent = `${item.subtitle} · ${fmtTime(item.duration)} · 1080p Sophia Narration`;
+      document.getElementById('cur-panel').textContent = item.panel || 'Stand B3';
+
+      const chWrap = document.getElementById('cur-chapters');
+      chWrap.innerHTML = '';
+      (item.chapters || []).forEach((ch) => {
+        const b = document.createElement('button');
+        b.className = 'ch-btn';
+        b.textContent = `${fmtTime(ch.t)} · ${ch.label}`;
+        b.onclick = () => {
+          video.currentTime = ch.t;
+          video.play().catch(() => {});
+        };
+        chWrap.appendChild(b);
+      });
+
+      const notesEl = document.getElementById('cur-notes');
+      notesEl.innerHTML = '';
+      (item.tristanNotes || []).forEach((n) => {
+        const li = document.createElement('li');
+        li.textContent = n;
+        notesEl.appendChild(li);
+      });
+
+      const cuesEl = document.getElementById('cur-cues');
+      cuesEl.innerHTML = '';
+      let cues = item.captions && item.captions.length ? item.captions : await parseVttFallback(item.vttUrl);
+      cues.forEach((c) => {
+        const row = document.createElement('div');
+        row.className = 'cue-row';
+        row.innerHTML = `<span class="cue-time">${fmtTime(c.s)}</span><span class="cue-txt"></span>`;
+        row.querySelector('.cue-txt').textContent = c.text;
+        row.onclick = () => {
+          video.currentTime = Math.max(0, (c.s || 0) - 0.15);
+          video.play().catch(() => {});
+        };
+        cuesEl.appendChild(row);
+      });
+    }
+
+    async function init() {
+      const res = await fetch('/api/catalog');
+      const data = await res.json();
+      catalog = data.catalog || [];
+
+      const totalSec = catalog.reduce((acc, v) => acc + (v.duration || 0), 0);
+      document.getElementById('total-runtime').textContent = `10 videos · ${fmtTime(totalSec)} total`;
+
+      if (data.lanIps && data.lanIps.length) {
+        document.getElementById('lan-readout').textContent =
+          `Detected LAN IP: http://${data.lanIps[0]}:${data.port}/ipad`;
+      }
+
+      const listEl = document.getElementById('video-items');
+      listEl.innerHTML = '';
+      catalog.forEach((v) => {
+        const btn = document.createElement('button');
+        btn.className = 'vid-item';
+        btn.dataset.slug = v.slug;
+        btn.innerHTML = `
+          <div class="vid-item-top">
+            <span class="vid-num">${String(v.number).padStart(2, '0')}</span>
+            <span class="vid-dur">${fmtTime(v.duration)}</span>
+          </div>
+          <div class="vid-title">${v.title}</div>
+          <div class="vid-sub">${v.subtitle}</div>
+          <div class="vid-panel">${v.panel || ''}</div>
+        `;
+        btn.onclick = () => selectVideo(v.slug, true);
+        listEl.appendChild(btn);
+      });
+
+      // Honour ?v=<slug> if provided, otherwise default to Video 01
+      const reqSlug = new URLSearchParams(window.location.search).get('v');
+      const defaultSlug = (reqSlug && catalog.find((v) => v.slug === reqSlug))
+        ? reqSlug
+        : (catalog.find((v) => v.slug === '01-reloops-overview') ? '01-reloops-overview' : catalog[0]?.slug);
+      if (defaultSlug) await selectVideo(defaultSlug, false);
+    }
+
+    // Tab switching + lazy iframe load for Simulator
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
+        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.toggle('active', p.id === `tab-${target}`));
+
+        if (target === 'simulator') {
+          const ipadFrame = document.getElementById('sim-ipad');
+          const tvFrame = document.getElementById('sim-tv');
+          if (!ipadFrame.src) ipadFrame.src = ipadFrame.dataset.src;
+          if (!tvFrame.src) tvFrame.src = tvFrame.dataset.src;
+        }
+      });
+    });
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>reloops · 50&quot; Stand B3 Stage</title>
+  <style>
+    @font-face {
+      font-family: 'Plus Jakarta Sans';
+      font-style: normal;
+      font-weight: 400 800;
+      src: url('./assets/font.woff2') format('woff2');
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #0c192a;
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+    .stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background:
+        radial-gradient(circle at 6% 8%, rgba(37, 99, 235, 0.25) 0%, rgba(30, 64, 175, 0.08) 42%, transparent 70%),
+        radial-gradient(circle at 95% 92%, rgba(52, 211, 153, 0.16) 0%, rgba(16, 185, 129, 0.05) 42%, transparent 70%),
+        #0c192a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Idle Stand Backdrop */
+    #idle-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4vw;
+      text-align: center;
+      transition: opacity 0.45s ease;
+      z-index: 5;
+    }
+    #idle-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .logo {
+      height: clamp(54px, 7.2vh, 96px);
+      width: auto;
+      margin-bottom: 3.2vh;
+    }
+    .eyebrow {
+      font-size: clamp(14px, 1.45vw, 24px);
+      font-weight: 600;
+      color: #60a5fa;
+      letter-spacing: 0.03em;
+      margin-bottom: 1.4vh;
+    }
+    .headline-wrap {
+      min-height: 14vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .headline {
+      font-size: clamp(32px, 4.1vw, 72px);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .headline .emerald { color: #34d399; }
+    .subline {
+      margin-top: 1.6vh;
+      font-size: clamp(16px, 1.65vw, 28px);
+      font-weight: 500;
+      color: #94a3b8;
+      max-width: 52ch;
+      transition: opacity 0.45s ease;
+    }
+    .pillars {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 4.8vh;
+      max-width: 1100px;
+    }
+    .pill {
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: clamp(13px, 1.1vw, 19px);
+      font-weight: 600;
+      background: rgba(22, 36, 53, 0.85);
+      border: 1.5px solid rgba(148, 163, 184, 0.18);
+      color: #cbd5e1;
+      transition: all 0.35s ease;
+    }
+    .pill.active {
+      background: rgba(37, 99, 235, 0.22);
+      border-color: rgba(96, 165, 250, 0.75);
+      color: #ffffff;
+      box-shadow: 0 8px 28px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Fullscreen 1080p Video Layer */
+    #player-wrap {
+      position: absolute;
+      inset: 0;
+      background: #0c192a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 10;
+    }
+    #player-wrap.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #0c192a;
+    }
+    video::cue {
+      background: rgba(8, 17, 30, 0.88);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1.35vw;
+    }
+
+    /* Subtle Paused Badge when Tristan pauses to explain a screen */
+    #paused-pill {
+      position: absolute;
+      top: 28px;
+      right: 34px;
+      z-index: 20;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(8, 17, 30, 0.82);
+      border: 1px solid rgba(96, 165, 250, 0.5);
+      color: #93c5fd;
+      font-size: 15px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    #paused-pill.show { opacity: 1; }
+
+    /* One-time audio unlock button if browser blocks unmuted autoplay */
+    #unlock-audio {
+      position: absolute;
+      bottom: 28px;
+      right: 32px;
+      z-index: 30;
+      padding: 12px 22px;
+      border-radius: 12px;
+      background: #1d6bf3;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(29, 107, 243, 0.45);
+      display: none;
+    }
+  </style>
+  <script src="./stand-b3-runtime.js"></script>
+</head>
+<body>
+  <div class="stage" id="stage-root">
+    <div id="idle-screen">
+      <img src="./assets/logo-white.png" alt="reloops" class="logo" />
+      <div class="eyebrow" id="idle-eyebrow">The operations platform for removal companies</div>
+      <div class="headline-wrap">
+        <h1 class="headline" id="idle-h1">Less admin. <span class="emerald">More moves.</span></h1>
+        <p class="subline" id="idle-sub">Ask us to walk through any part of a move — from first phone call to loaded van and storage.</p>
+      </div>
+      <div class="pillars" id="idle-pills"></div>
+    </div>
+
+    <div id="player-wrap">
+      <video id="tv-video" playsinline preload="auto">
+        <track id="tv-track" kind="captions" srclang="en" label="English" default />
+      </video>
+    </div>
+
+    <div id="paused-pill">Paused · Holding screen</div>
+    <button id="unlock-audio" type="button">🔊 Tap once to enable TV sound</button>
+  </div>
+
+  <script>
+    const SLIDES = [
+      { pill: 'Full platform', h1: 'Less admin. <span class="emerald">More moves.</span>', sub: 'Run enquiries, surveys, quotes, crews, invoicing and storage in one place.' },
+      { pill: 'Video surveys', h1: 'Quote in hours. <span class="emerald">Not days.</span>', sub: 'Self-serve phone walkthroughs, guided video calls, or home visits in your diary.' },
+      { pill: 'Loop AI assistant', h1: 'No calls missed. <span class="emerald">No jobs lost.</span>', sub: 'Answers in your firm’s name when you’re busy and books your surveyor straight in.' },
+      { pill: 'Board & Crew App', h1: 'Every job. <span class="emerald">In full view.</span>', sub: 'Assign vans, drivers and porters in seconds and send the day’s sheet to their phones.' },
+      { pill: 'Storage Hub', h1: 'Storage. <span class="emerald">Now delivered.</span>', sub: 'Warehouse crates, bay maps, mobile & managed storage, and recurring billing.' },
+      { pill: 'Payments & Xero', h1: 'Paid up front. <span class="emerald">No chasing.</span>', sub: 'Deposits paid online at booking, automatic invoices, and linked Xero payments.' },
+    ];
+
+    const pillsEl = document.getElementById('idle-pills');
+    const h1El = document.getElementById('idle-h1');
+    const subEl = document.getElementById('idle-sub');
+    const idleScreen = document.getElementById('idle-screen');
+    const playerWrap = document.getElementById('player-wrap');
+    const video = document.getElementById('tv-video');
+    const track = document.getElementById('tv-track');
+    const pausedPill = document.getElementById('paused-pill');
+    const unlockBtn = document.getElementById('unlock-audio');
+
+    SLIDES.forEach((s, i) => {
+      const span = document.createElement('span');
+      span.className = 'pill' + (i === 0 ? ' active' : '');
+      span.textContent = s.pill;
+      pillsEl.appendChild(span);
+    });
+
+    let slideIdx = 0;
+    setInterval(() => {
+      if (!idleScreen.classList.contains('hidden')) {
+        slideIdx = (slideIdx + 1) % SLIDES.length;
+        h1El.style.opacity = '0';
+        subEl.style.opacity = '0';
+        setTimeout(() => {
+          h1El.innerHTML = SLIDES[slideIdx].h1;
+          subEl.textContent = SLIDES[slideIdx].sub;
+          h1El.style.opacity = '1';
+          subEl.style.opacity = '1';
+          [...pillsEl.children].forEach((el, idx) => el.classList.toggle('active', idx === slideIdx));
+        }, 320);
+      }
+    }, 5200);
+
+    let currentSeq = 0;
+    let loadedSlug = '';
+
+    function applyCaptions(on) {
+      if (video.textTracks && video.textTracks[0]) {
+        video.textTracks[0].mode = on ? 'showing' : 'hidden';
+      }
+    }
+
+    async function applyState(s) {
+      if (!s) return;
+      const isNewCmd = s.seq !== currentSeq;
+      currentSeq = s.seq;
+
+      video.muted = !!s.muted;
+      applyCaptions(!!s.captions);
+
+      if (s.mode === 'idle') {
+        video.pause();
+        playerWrap.classList.remove('active');
+        idleScreen.classList.remove('hidden');
+        pausedPill.classList.remove('show');
+        return;
+      }
+
+      idleScreen.classList.add('hidden');
+      playerWrap.classList.add('active');
+
+      const slugChanged = loadedSlug !== s.activeSlug;
+      if (slugChanged) {
+        loadedSlug = s.activeSlug;
+        video.src = `./videos/${s.activeSlug}.mp4`;
+        track.src = `./videos/${s.activeSlug}.en.vtt`;
+        video.load();
+      }
+
+      if (isNewCmd && typeof s.seekTo === 'number') {
+        try { video.currentTime = s.seekTo; } catch {}
+      }
+
+      if (s.paused) {
+        video.pause();
+        pausedPill.classList.add('show');
+      } else {
+        pausedPill.classList.remove('show');
+        if (video.paused || slugChanged) {
+          try {
+            await video.play();
+            unlockBtn.style.display = 'none';
+          } catch {
+            // Fallback muted play + show 1-tap sound button
+            video.muted = true;
+            try { await video.play(); } catch {}
+            unlockBtn.style.display = 'block';
+          }
+        }
+      }
+      setTimeout(() => applyCaptions(!!s.captions), 150);
+    }
+
+    unlockBtn.addEventListener('click', () => {
+      video.muted = false;
+      video.play();
+      unlockBtn.style.display = 'none';
+    });
+
+    // Double-click stage for fullscreen on 50" TV
+    document.getElementById('stage-root').addEventListener('dblclick', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+      else document.exitFullscreen?.();
+    });
+
+    // Hold final closing lockup cleanly for 4 seconds after video ends, then return to Stand Backdrop
+    video.addEventListener('ended', () => {
+      setTimeout(() => {
+        if (video.ended) {
+          fetch('/api/command', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'idle' }),
+          }).catch(() => {});
+        }
+      }, 4200);
+    });
+
+    // Report live playback progress to Tristan's iPad every 400ms
+    setInterval(() => {
+      if (!playerWrap.classList.contains('active')) return;
+      fetch('/api/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'progress',
+          currentTime: video.currentTime || 0,
+          duration: video.duration || 0,
+        }),
+      }).catch(() => {});
+    }, 450);
+
+    fetch('/api/catalog').then(r => r.json()).then(d => applyState(d.state)).catch(() => {});
+    const es = new EventSource('/api/events');
+    es.addEventListener('state', (ev) => applyState(JSON.parse(ev.data)));
+  </script>
+</body>
+</html>
